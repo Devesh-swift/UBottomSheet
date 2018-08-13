@@ -14,6 +14,7 @@
 		0C98890C2121F19600A19676 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0C98890A2121F19600A19676 /* LaunchScreen.storyboard */; };
 		0C9889172121F19600A19676 /* UBottomSheetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9889162121F19600A19676 /* UBottomSheetTests.swift */; };
 		0C9889222121F19600A19676 /* UBottomSheetUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9889212121F19600A19676 /* UBottomSheetUITests.swift */; };
+		0C9889302121F1ED00A19676 /* BottomSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C98892F2121F1ED00A19676 /* BottomSheetViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +48,7 @@
 		0C98891D2121F19600A19676 /* UBottomSheetUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UBottomSheetUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0C9889212121F19600A19676 /* UBottomSheetUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UBottomSheetUITests.swift; sourceTree = "<group>"; };
 		0C9889232121F19600A19676 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		0C98892F2121F1ED00A19676 /* BottomSheetViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BottomSheetViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +101,7 @@
 			children = (
 				0C9889012121F19500A19676 /* AppDelegate.swift */,
 				0C9889032121F19500A19676 /* ViewController.swift */,
+				0C98892F2121F1ED00A19676 /* BottomSheetViewController.swift */,
 				0C9889052121F19500A19676 /* Main.storyboard */,
 				0C9889082121F19600A19676 /* Assets.xcassets */,
 				0C98890A2121F19600A19676 /* LaunchScreen.storyboard */,
@@ -257,6 +260,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0C9889042121F19500A19676 /* ViewController.swift in Sources */,
+				0C9889302121F1ED00A19676 /* BottomSheetViewController.swift in Sources */,
 				0C9889022121F19500A19676 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
