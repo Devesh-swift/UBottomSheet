@@ -44,9 +44,9 @@ class BottomSheetViewController: UIViewController{
         
         pan = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
         pan.delegate = self
-        
-        self.tableView.panGestureRecognizer.addTarget(self, action: #selector(handlePan(_:)))
         self.panView.addGestureRecognizer(pan)
+
+        self.tableView.panGestureRecognizer.addTarget(self, action: #selector(handlePan(_:)))
 
     }
     
@@ -61,6 +61,8 @@ class BottomSheetViewController: UIViewController{
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        guard scrollView == tableView else {return}
+
         if (self.parentView.frame.minY > topY){
             self.tableView.contentOffset.y = 0
         }
@@ -69,6 +71,8 @@ class BottomSheetViewController: UIViewController{
 
     //this stops unintended tableview scrolling while animating to top
     func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+        guard scrollView == tableView else {return}
+
         if disableTableScroll{
             targetContentOffset.pointee = scrollView.contentOffset
             disableTableScroll = false
@@ -76,6 +80,7 @@ class BottomSheetViewController: UIViewController{
     }
     
     @objc func handlePan(_ recognizer: UIPanGestureRecognizer){
+        if self.tableView.contentOffset.y > 0{return}
 
         let dy = recognizer.translation(in: self.parentView).y
         switch recognizer.state {
@@ -155,11 +160,13 @@ class BottomSheetViewController: UIViewController{
 
 extension BottomSheetViewController: UITableViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 50
+        return 100
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "SimpleTableCell", for: indexPath) as! SimpleTableCell
+        let model = SimpleTableCellViewModel(image: nil, title: "Title \(indexPath.row)", subtitle: "Subtitle \(indexPath.row)")
+        cell.configure(model: model)
         return cell
     }
 }
