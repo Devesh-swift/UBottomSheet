@@ -1,4 +1,4 @@
 # UBottomSheet
-Apple Maps UI like bottom sheet
+Bottom sheet that mimics the behaviours and UI of iPhone Maps app.
 
 <img src="UBottomSheet/anim.gif" width="300">
