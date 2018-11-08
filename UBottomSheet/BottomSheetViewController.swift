@@ -29,13 +29,19 @@ class BottomSheetViewController: UIViewController{
     var parentView: UIView!
     
     var initalFrame: CGRect!
-    let topY: CGFloat = 80
-    var middleY: CGFloat = 400
-    var bottomY: CGFloat = 600
-    let bottomOffset: CGFloat = 64
-    var lastLevel: SheetLevel = .middle
+    var topY: CGFloat = 80 //change this in viewWillAppear for top position
+    var middleY: CGFloat = 400 //change this in viewWillAppear to decide if animate to top or bottom
+    var bottomY: CGFloat = 600 //no need to change this
+    let bottomOffset: CGFloat = 64 //sheet height on bottom position
+    var lastLevel: SheetLevel = .middle //choose inital position of the sheet
+    
     var disableTableScroll = false
     
+    //hack panOffset To prevent jump when goes from top to down
+    var panOffset: CGFloat = 0
+    var applyPanOffset = false
+    
+    //tableview variables
     var listItems: [Any] = []
     var headerItems: [Any] = []
 
@@ -53,6 +59,7 @@ class BottomSheetViewController: UIViewController{
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.initalFrame = UIScreen.main.bounds
+        self.topY = round(initalFrame.height * 0.05)
         self.middleY = initalFrame.height * 0.6
         self.bottomY = initalFrame.height - bottomOffset
         self.lastY = self.middleY
@@ -80,15 +87,22 @@ class BottomSheetViewController: UIViewController{
     }
     
     @objc func handlePan(_ recognizer: UIPanGestureRecognizer){
-        if self.tableView.contentOffset.y > 0{return}
 
         let dy = recognizer.translation(in: self.parentView).y
         switch recognizer.state {
+        case .began:
+            applyPanOffset = (self.tableView.contentOffset.y > 0)
         case .changed:
+            if self.tableView.contentOffset.y > 0{
+                panOffset = dy
+                return
+            }
+            
             if self.tableView.contentOffset.y <= 0{
-                let maxY = max(topY, lastY + dy)
+                if !applyPanOffset{panOffset = 0}
+                let maxY = max(topY, lastY + dy - panOffset)
                 let y = min(bottomY, maxY)
-//                self.panView.frame = self.initalFrame.offsetBy(dx: 0, dy: y)
+                //                self.panView.frame = self.initalFrame.offsetBy(dx: 0, dy: y)
                 bottomSheetDelegate?.updateBottomSheet(frame: self.initalFrame.offsetBy(dx: 0, dy: y))
             }
             
@@ -96,8 +110,9 @@ class BottomSheetViewController: UIViewController{
                 self.tableView.contentOffset.y = 0
             }
         case .failed, .ended, .cancelled:
+            panOffset = 0
             self.panView.isUserInteractionEnabled = false
-
+            
             self.disableTableScroll = self.lastLevel != .top
             
             self.lastY = self.parentView.frame.minY
@@ -107,14 +122,14 @@ class BottomSheetViewController: UIViewController{
                 
                 switch self.lastLevel{
                 case .top:
-//                    self.panView.frame = self.initalFrame.offsetBy(dx: 0, dy: self.topY)
+                    //                    self.panView.frame = self.initalFrame.offsetBy(dx: 0, dy: self.topY)
                     self.bottomSheetDelegate?.updateBottomSheet(frame: self.initalFrame.offsetBy(dx: 0, dy: self.topY))
-                    self.tableView.contentInset.bottom = self.topY + 50
+                    self.tableView.contentInset.bottom = 50
                 case .middle:
-//                    self.panView.frame = self.initalFrame.offsetBy(dx: 0, dy: self.middleY)
+                    //                    self.panView.frame = self.initalFrame.offsetBy(dx: 0, dy: self.middleY)
                     self.bottomSheetDelegate?.updateBottomSheet(frame: self.initalFrame.offsetBy(dx: 0, dy: self.middleY))
                 case .bottom:
-//                    self.panView.frame = self.initalFrame.offsetBy(dx: 0, dy: self.bottomY)
+                    //                    self.panView.frame = self.initalFrame.offsetBy(dx: 0, dy: self.bottomY)
                     self.bottomSheetDelegate?.updateBottomSheet(frame: self.initalFrame.offsetBy(dx: 0, dy: self.bottomY))
                 }
                 
@@ -122,7 +137,6 @@ class BottomSheetViewController: UIViewController{
                 self.panView.isUserInteractionEnabled = true
                 self.lastY = self.parentView.frame.minY
             }
-            
         default:
             break
         }
