@@ -53,9 +53,16 @@ class BottomSheetViewController: UIViewController{
         self.panView.addGestureRecognizer(pan)
 
         self.tableView.panGestureRecognizer.addTarget(self, action: #selector(handlePan(_:)))
+        
+        //Bug fix #5. see https://github.com/OfTheWolf/UBottomSheet/issues/5
+        //Tableview didselect works on second try sometimes so i use here a tap gesture recognizer instead of didselect method and find the table row tapped in the handleTap(_:) method
+        let tap = UITapGestureRecognizer.init(target: self, action: #selector(handleTap(_:)))
+        tap.delegate = self
+        tableView.addGestureRecognizer(tap)
+        //Bug fix #5 end
 
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.initalFrame = UIScreen.main.bounds
@@ -86,6 +93,16 @@ class BottomSheetViewController: UIViewController{
         }
     }
     
+    //Bug fix #5. see https://github.com/OfTheWolf/UBottomSheet/issues/5
+    @objc func handleTap(_ recognizer: UITapGestureRecognizer){
+        let p = recognizer.location(in: self.tableView)
+        let index = tableView.indexPathForRow(at: p)
+        //WARNING: calling selectRow doesn't trigger tableView didselect delegate. So handle selected row here.
+        //You can remove this line if you dont want to force select the cell
+        tableView.selectRow(at: index, animated: false, scrollPosition: .none)
+    }//Bug fix #5 end
+    
+    
     @objc func handlePan(_ recognizer: UIPanGestureRecognizer){
 
         let dy = recognizer.translation(in: self.parentView).y
@@ -111,6 +128,12 @@ class BottomSheetViewController: UIViewController{
             }
         case .failed, .ended, .cancelled:
             panOffset = 0
+            
+            //bug fix #6. see https://github.com/OfTheWolf/UBottomSheet/issues/6
+            if (self.tableView.contentOffset.y > 0){
+                return
+            }//bug fix #6 end
+            
             self.panView.isUserInteractionEnabled = false
             
             self.disableTableScroll = self.lastLevel != .top
@@ -159,19 +182,6 @@ class BottomSheetViewController: UIViewController{
     }
 }
 
-
-//extension BottomSheetViewController: UICollectionViewDelegate, UICollectionViewDataSource{
-//    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-//        return 8
-//    }
-//    
-//    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-//        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "topCell", for: indexPath)
-//        return cell
-//    }
-//}
-
-
 extension BottomSheetViewController: UITableViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 100
@@ -189,4 +199,5 @@ extension BottomSheetViewController: UIGestureRecognizerDelegate{
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
     }
+    
 }
